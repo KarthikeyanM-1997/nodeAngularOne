@@ -48,10 +48,10 @@ function setInDb() {
 
         var testObj = { key: "relList", value: JSON.stringify(relList) };
 
-        dbObject.collection("AtlasCollectionOne").insertOne(testObj, function (err, resp) {
+        dbObject.collection("testCollOne").insertOne(testObj, function (err, resp) {
             if (err) throw err;
 
-            console.log("RelList inserted in prod collection 1");
+            //console.log("RelList inserted in prod collection 1");
 
             db.close();
         });
@@ -77,20 +77,20 @@ function setStudentInDB() {
 
         var sObj = { key: "Students", value: students };
 
-        dbObject.collection("AtlasCollectionOne").insertOne(sObj, function (err, resp) {
+        dbObject.collection("testCollOne").insertOne(sObj, function (err, resp) {
             if (err) throw err;
 
-            console.log("Students inserted in AtlasCollectionOne");
+            //console.log("Students inserted in testCollOne");
 
             db.close();
         });
 
         var usObj = { key: "unassignedStudents", value: unassignedStudentsList };
 
-        dbObject.collection("AtlasCollectionOne").insertOne(usObj, function (err, resp) {
+        dbObject.collection("testCollOne").insertOne(usObj, function (err, resp) {
             if (err) throw err;
 
-            console.log("Unassigned Students inserted in AtlasCollectionOne");
+            //console.log("Unassigned Students inserted in testCollOne");
 
             db.close();
         });
@@ -110,7 +110,7 @@ function setFromDb() {
 
         var testObj = { relList: JSON.stringify(relList) };
 
-        dbObject.collection("AtlasCollectionOne").find({ key: "relList" }).toArray(function (err, resp) {
+        dbObject.collection("testCollOne").find({ key: "relList" }).toArray(function (err, resp) {
             if (err) throw err;
 
             if (resp[resp.length - 1] !== undefined) {
@@ -123,7 +123,7 @@ function setFromDb() {
             db.close();
         });
 
-        dbObject.collection("AtlasCollectionOne").find({ key: "Students" }).toArray(function (err, resp) {
+        dbObject.collection("testCollOne").find({ key: "Students" }).toArray(function (err, resp) {
             if (err) throw err;
 
             console.log("Students retrieved from server");
@@ -136,7 +136,7 @@ function setFromDb() {
         });
 
 
-        dbObject.collection("AtlasCollectionOne").find({ key: "Mentors" }).toArray(function (err, resp) {
+        dbObject.collection("testCollOne").find({ key: "Mentors" }).toArray(function (err, resp) {
             if (err) throw err;
 
             console.log("Mentors retrieved from server");
@@ -149,7 +149,7 @@ function setFromDb() {
             db.close();
         });
 
-        dbObject.collection("AtlasCollectionOne").find({ key: "unassignedStudents" }).toArray(function (err, resp) {
+        dbObject.collection("testCollOne").find({ key: "unassignedStudents" }).toArray(function (err, resp) {
             if (err) throw err;
 
             console.log("Unaasigned Student retrieved from server");
@@ -175,10 +175,10 @@ function setMentorInDB() {
 
         var sObj = { key: "Mentors", value: mentors };
 
-        dbObject.collection("AtlasCollectionOne").insertOne(sObj, function (err, resp) {
+        dbObject.collection("testCollOne").insertOne(sObj, function (err, resp) {
             if (err) throw err;
 
-            console.log("Mentor inserted in AtlasCollectionOne");
+            console.log("Mentor inserted in testCollOne");
 
             db.close();
         });
@@ -209,7 +209,7 @@ app.post('/addStudent', function (req, res) {
         students.push(body.name);
 
         unassignedStudentsList.push(body.name);
-        console.log(unassignedStudentsList)
+        //console.log(unassignedStudentsList)
         setStudentInDB();
 
         res.end("Added Student");
@@ -232,27 +232,34 @@ app.post('/removeStudentRel', function (req, res) {
 
 app.post('/addRel', function (req, res) {
     let body = req.body;
+    console.log("Binding " + body.studentName + " : " + body.mentorName);
     if (!mentors.includes(body.mentorName)) {
-        res.status(404).send('Mentor Not found');
+        res.status(404).end('Mentor Not found');
     }
 
     if (!students.includes(body.studentName)) {
-        res.status(404).send('Student Not found');
+        res.status(404).end('Student Not found');
     }
 
     if (relList[body.mentorName] === undefined) {
         relList[body.mentorName] = [];
     }
     else if (relList[body.mentorName].includes(body.studentName)) {
-        res.status(400).send('Relation already present');
+        res.status(400).end('Relation already present');
+    }
+    else {
+        relList[body.mentorName].push(body.studentName);
+        unassignedStudentsList.splice(unassignedStudentsList.indexOf(body.studentName), 1);
+
+        setInDb();
+
+        console.log(relList);
+
+
+        res.end("Added Relation");
     }
 
-    relList[body.mentorName].push(body.studentName);
-    unassignedStudentsList.splice(unassignedStudentsList.indexOf(body.studentName), 1);
 
-    setInDb();
-
-    res.end("Added Relation");
 });
 
 app.get('/studentList', function (req, res) {
