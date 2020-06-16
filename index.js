@@ -48,7 +48,7 @@ function setInDb() {
 
         var testObj = { key: "relList", value: JSON.stringify(relList) };
 
-        dbObject.collection("testCollOne").insertOne(testObj, function (err, resp) {
+        dbObject.collection("mainProdColl").insertOne(testObj, function (err, resp) {
             if (err) throw err;
 
             //console.log("RelList inserted in prod collection 1");
@@ -77,20 +77,20 @@ function setStudentInDB() {
 
         var sObj = { key: "Students", value: students };
 
-        dbObject.collection("testCollOne").insertOne(sObj, function (err, resp) {
+        dbObject.collection("mainProdColl").insertOne(sObj, function (err, resp) {
             if (err) throw err;
 
-            //console.log("Students inserted in testCollOne");
+            //console.log("Students inserted in mainProdColl");
 
             db.close();
         });
 
         var usObj = { key: "unassignedStudents", value: unassignedStudentsList };
 
-        dbObject.collection("testCollOne").insertOne(usObj, function (err, resp) {
+        dbObject.collection("mainProdColl").insertOne(usObj, function (err, resp) {
             if (err) throw err;
 
-            //console.log("Unassigned Students inserted in testCollOne");
+            //console.log("Unassigned Students inserted in mainProdColl");
 
             db.close();
         });
@@ -110,7 +110,7 @@ function setFromDb() {
 
         var testObj = { relList: JSON.stringify(relList) };
 
-        dbObject.collection("testCollOne").find({ key: "relList" }).toArray(function (err, resp) {
+        dbObject.collection("mainProdColl").find({ key: "relList" }).toArray(function (err, resp) {
             if (err) throw err;
 
             if (resp[resp.length - 1] !== undefined) {
@@ -123,7 +123,7 @@ function setFromDb() {
             db.close();
         });
 
-        dbObject.collection("testCollOne").find({ key: "Students" }).toArray(function (err, resp) {
+        dbObject.collection("mainProdColl").find({ key: "Students" }).toArray(function (err, resp) {
             if (err) throw err;
 
             console.log("Students retrieved from server");
@@ -136,7 +136,7 @@ function setFromDb() {
         });
 
 
-        dbObject.collection("testCollOne").find({ key: "Mentors" }).toArray(function (err, resp) {
+        dbObject.collection("mainProdColl").find({ key: "Mentors" }).toArray(function (err, resp) {
             if (err) throw err;
 
             console.log("Mentors retrieved from server");
@@ -149,7 +149,7 @@ function setFromDb() {
             db.close();
         });
 
-        dbObject.collection("testCollOne").find({ key: "unassignedStudents" }).toArray(function (err, resp) {
+        dbObject.collection("mainProdColl").find({ key: "unassignedStudents" }).toArray(function (err, resp) {
             if (err) throw err;
 
             console.log("Unaasigned Student retrieved from server");
@@ -175,10 +175,10 @@ function setMentorInDB() {
 
         var sObj = { key: "Mentors", value: mentors };
 
-        dbObject.collection("testCollOne").insertOne(sObj, function (err, resp) {
+        dbObject.collection("mainProdColl").insertOne(sObj, function (err, resp) {
             if (err) throw err;
 
-            console.log("Mentor inserted in testCollOne");
+            console.log("Mentor inserted in mainProdColl");
 
             db.close();
         });
